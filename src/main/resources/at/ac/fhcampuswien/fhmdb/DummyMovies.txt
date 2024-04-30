@@ -1,0 +1,15 @@
+The Shawshank Redemption;Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.;ACTION,DRAMA
+The Godfather;The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.;ACTION,DRAMA
+The Dark Knight;When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.;ACTION,DRAMA
+Forrest Gump;The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.;DRAMA,ROMANCE
+Fight Club;An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.;DRAMA,THRILLER
+Inception;A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.;ACTION,DRAMA
+The Matrix;A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.;ACTION,SCIENCE_FICTION
+Pulp Fiction;The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.;CRIME,DRAMA
+Schindler's List;In German-occupied Poland during World War II, Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazi Germans.;BIOGRAPHY,DRAMA
+The Lord of the Rings: The Return of the King;Gandalf and Aragorn lead the people of Gondor in a battle against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.;ACTION,ADVENTURE
+World of Warcraft: The Burning Crusade;PC - The Burning Crusade is the first expansion for World of Warcraft. It was released on January 16, 2007 at midnight in Europe and North America, selling nearly 2.4 million copies on release day alone and making it, at the time, the fastest-selling PC game of all time.;ACTION,ADVENTURE
+The Silence of the Lambs;A young FBI cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer, a madman who skins his victims.;CRIME,DRAMA
+Goodfellas;The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito in the Italian-American crime syndicate.;BIOGRAPHY,CRIME
+The Green Mile;The lives of guards on Death Row are affected by one of their charges: a black man accused of child murder and rape, yet who has a mysterious gift.;DRAMA,CRIME
+The Godfather: Part II;The early life and career of Vito Corleone in 1920s New York City is portrayed, while his son, Michael, expands and tightens his grip on his crime syndicate stretching from Lake Tahoe, Nevada to pre-revolution 1958 Cuba.;DRAMA,THRILLER
