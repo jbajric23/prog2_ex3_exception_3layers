@@ -1,6 +1,7 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
@@ -19,6 +20,7 @@ public class MovieCell extends ListCell<Movie> {
     private final ImageView movieImage = new ImageView();
     private final HBox layout = new HBox();
     private final VBox textLayout = new VBox();
+    Button watchButton = new Button("Watchlist");
     private static final Map<String, Image> imageCache = new HashMap<>();
 
     public MovieCell() {
@@ -26,6 +28,14 @@ public class MovieCell extends ListCell<Movie> {
         movieImage.setPreserveRatio(true);
         layout.getChildren().addAll(movieImage, textLayout);
         textLayout.setFillWidth(true);
+
+        watchButton.setOnAction(event -> {
+            Movie movie = getItem();
+            if (movie != null) {
+                // Here you can add the movie to the watchlist
+                return; // Placeholder
+            }
+        });
     }
 
     @Override
@@ -57,7 +67,7 @@ public class MovieCell extends ListCell<Movie> {
         Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white;");
         descriptionLabel.setWrapText(true);
 
-        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel);
+        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel, watchButton);
     }
 
     private Label createStyledLabel(String text, double fontSize, String style) {
