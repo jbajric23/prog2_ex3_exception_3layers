@@ -1,11 +1,13 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
-
+import at.ac.fhcampuswien.fhmdb.FhmdbApplication;
 import at.ac.fhcampuswien.fhmdb.data.MovieAPI;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +15,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
 import org.controlsfx.control.CheckComboBox;
 
 import java.io.FileNotFoundException;
@@ -30,6 +34,9 @@ public class HomeController implements Initializable {
 
     @FXML
     public JFXListView movieListView;
+
+    @FXML
+    public JFXListView watchListView; // ListView for the watchlist
 
     @FXML
     public JFXComboBox genreComboBox;
@@ -62,6 +69,10 @@ public class HomeController implements Initializable {
             throw new RuntimeException(e);
         }
     }
+
+    // List for the watchlist movies
+    public List<Movie> watchListMovies;
+
 
     // David
     public String getMostPopularActor(List<Movie> movies) {
@@ -155,14 +166,36 @@ public class HomeController implements Initializable {
         FXCollections.sort(observableMovies, comparator);
     }
 
+    public static void setWatchButtonAction(Movie movie) {
+        // This method sets the watch button
+        Stage stage = new Stage();
+        FhmdbApplication app = new FhmdbApplication();
+        try {
+            app.startWatchlistScene(stage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // adds all dummy data movies to the observable list
-        observableMovies.addAll(allMovies);
-
         // initialize UI stuff
-        movieListView.setItems(observableMovies);   // set data of observable list to list view
-        movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
+
+        // Check if the URL contains the watchlist-view.fxml
+        if (url.getPath().contains("watchlist-view.fxml")) {
+            ObservableList<Movie> observableWatchListMovies = FXCollections.observableArrayList();
+            // Here will the watchlist movies be loaded and added
+            List<Movie> movies = new ArrayList<>();
+            watchListMovies = movies;
+            observableWatchListMovies.addAll(watchListMovies);
+            watchListView.setItems(observableWatchListMovies);
+            watchListView.setCellFactory(movieListView -> new MovieCell());
+        // Else block for the home-view.fxml
+        } else {
+            observableMovies.addAll(allMovies);         // add dummy data to observable list
+            movieListView.setItems(observableMovies);   // set data of observable list to list view
+            movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
+        }
 
         // Add genre items to the genreComboBox
         genreComboBox.setPromptText("Filter by Genre");
@@ -211,7 +244,7 @@ public class HomeController implements Initializable {
             observableMovies.addAll(filteredMovies);
 
             //possibility to sort a filtered selection of the movies
-            if(sortBtn.getText().equals("Sort (asc)")) {
+            if (sortBtn.getText().equals("Sort (asc)")) {
                 sortMovies(true);
             } else {
                 sortMovies(false);
@@ -243,6 +276,5 @@ public class HomeController implements Initializable {
                 sortBtn.setText("Sort (asc)");
             }
         });
-
     }
 }

@@ -1,6 +1,8 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import static at.ac.fhcampuswien.fhmdb.models.HomeController.setWatchButtonAction;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -14,13 +16,14 @@ import javafx.scene.text.FontWeight;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 //class done with quite a bit of ChatGPT help because of performance issues
 public class MovieCell extends ListCell<Movie> {
 
     private final ImageView movieImage = new ImageView();
     private final HBox layout = new HBox();
     private final VBox textLayout = new VBox();
-    Button watchButton = new Button("Watchlist");
+    private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
 
     public MovieCell() {
@@ -29,11 +32,13 @@ public class MovieCell extends ListCell<Movie> {
         layout.getChildren().addAll(movieImage, textLayout);
         textLayout.setFillWidth(true);
 
+        // TODO: Call setWatchButtonAction via HomeController
         watchButton.setOnAction(event -> {
             Movie movie = getItem();
             if (movie != null) {
-                // Here you can add the movie to the watchlist
-                return; // Placeholder
+                // Println is a placeholder for the actual action -> Will be implemented in the next task
+                System.out.println("Added " + movie.getTitle() + " to watchlist");
+                setWatchButtonAction(movie);
             }
         });
     }
@@ -87,6 +92,7 @@ public class MovieCell extends ListCell<Movie> {
         }
         movieImage.setImage(image);
     }
+
 }
 
 
