@@ -23,6 +23,10 @@ public class MovieRepository {
         }
     }
 
+    public MovieRepository() {
+
+    }
+
     public List<MovieEntity> getAllMovies() {
         try {
             return movieDao.queryForAll();

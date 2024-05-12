@@ -1,6 +1,7 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import at.ac.fhcampuswien.fhmdb.FhmdbApplication;
@@ -22,12 +23,11 @@ public class NavigationBarController {
 
     @FXML
     public void openWatchlist() {
-        // Code to navigate to the watchlist view
         Stage stage = (Stage) watchlistButton.getScene().getWindow();
         try {
             app.startWatchlistScene(stage);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (DatabaseException | MovieApiException e) {
+            showErrorDialog(e.getMessage());
         }
     }
 
@@ -36,6 +36,7 @@ public class NavigationBarController {
         // Code to open the login dialog
     }
 
+    /*
     @FXML
     public void goHome() {
         // Code to navigate to the home view
@@ -45,5 +46,23 @@ public class NavigationBarController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    */
+    @FXML
+    public void goHome() {
+        Stage stage = (Stage) homeButton.getScene().getWindow();
+        try {
+            app.start(stage);
+        } catch (DatabaseException | MovieApiException e) {
+            showErrorDialog(e.getMessage());
+        }
+    }
+
+    private void showErrorDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Fehler");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
