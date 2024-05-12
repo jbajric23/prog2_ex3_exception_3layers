@@ -1,7 +1,7 @@
 package at.ac.fhcampuswien.fhmdb.models;
 
 import at.ac.fhcampuswien.fhmdb.FhmdbApplication;
-import at.ac.fhcampuswien.fhmdb.data.MovieAPI;
+import at.ac.fhcampuswien.fhmdb.data.*;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 
 import com.jfoenix.controls.JFXButton;
@@ -27,21 +27,17 @@ import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
     @FXML
-    public JFXButton searchBtn;
+    public JFXButton searchBtn, resetFilterBtn, sortBtn;
 
     @FXML
     public TextField searchField;
 
     @FXML
-    public JFXListView movieListView;
+    public JFXListView movieListView, watchListView;
 
-    @FXML
-    public JFXListView watchListView; // ListView for the watchlist
 
     @FXML
     public JFXComboBox genreComboBox;
-
-
 
     @FXML
     CheckComboBox releaseYearBox;
@@ -51,13 +47,28 @@ public class HomeController implements Initializable {
     @FXML
     ComboBox ratingFromBox;
 
+    private final MovieRepository movieRepository;
+    private final WatchlistRepository watchlistRepository;
 
+    // List for the watchlist movies
+    public List<Movie> watchListMovies;
 
-    @FXML
-    public JFXButton sortBtn;
+    public HomeController() {
+        this.movieRepository = null; // oder setzen Sie einen Standardwert
+        this.watchlistRepository = null; // oder setzen Sie einen Standardwert
+    }
 
-    @FXML
-    public JFXButton resetFilterBtn;
+    public HomeController(MovieRepository movieRepository, WatchlistRepository watchlistRepository) {
+        this.movieRepository = movieRepository;
+        this.watchlistRepository = watchlistRepository;
+        try {
+            MovieAPI apiMovies = new MovieAPI();
+            allMovies = apiMovies.callAPI(null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public List<Movie> allMovies;
     // Call initializeMovies method with a FileReader object as parameter for better testing possibilities
@@ -69,11 +80,6 @@ public class HomeController implements Initializable {
             throw new RuntimeException(e);
         }
     }
-
-    // List for the watchlist movies
-    public List<Movie> watchListMovies;
-
-
     // David
     public String getMostPopularActor(List<Movie> movies) {
         MovieAPI movieAPI = new MovieAPI();
@@ -149,8 +155,7 @@ public class HomeController implements Initializable {
 
     public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
-    public HomeController() throws FileNotFoundException {
-    }
+
 
     public void setAllMovies(List<Movie> allMovies) {
             this.allMovies = allMovies;
@@ -217,14 +222,8 @@ public class HomeController implements Initializable {
 
 
         searchBtn.setOnAction(actionEvent -> {
-            System.out.println("Filter button clicked"); // Debug output
-
             String query = searchField.getText();
-            System.out.println("Query: " + query); // Debug output
-
             Genre genre = (Genre) genreComboBox.getSelectionModel().getSelectedItem();
-            System.out.println("Genre: " + genre); // Debug output
-
             List<Integer> releaseYears = releaseYearBox.getCheckModel().getCheckedItems();
             Integer ratingValue = (Integer) ratingFromBox.getSelectionModel().getSelectedItem();
             Double rating = null;
@@ -276,5 +275,19 @@ public class HomeController implements Initializable {
                 sortBtn.setText("Sort (asc)");
             }
         });
+    }
+
+
+    /*
+    public void addToWatchlist(MovieEntity movie) {
+        WatchlistMovieEntity watchlistMovie = new WatchlistMovieEntity();
+        watchlistMovie.setApiId(movie.getApiId());
+        watchlistRepository.addMovieToWatchlist(watchlistMovie);
+    }
+    */
+
+
+    public void removeFromWatchlist(WatchlistMovieEntity watchlistMovie) {
+        watchlistRepository.removeMovieFromWatchlist(watchlistMovie);
     }
 }

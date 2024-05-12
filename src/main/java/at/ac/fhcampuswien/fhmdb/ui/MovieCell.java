@@ -23,22 +23,43 @@ public class MovieCell extends ListCell<Movie> {
     private final ImageView movieImage = new ImageView();
     private final HBox layout = new HBox();
     private final VBox textLayout = new VBox();
-    private final Button watchButton = new Button("Watchlist"); // New Watchlist button
+    //private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
+    private final Button watchButton = new Button();
+//    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
+//    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
     public MovieCell() {
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
-        layout.getChildren().addAll(movieImage, textLayout);
+        layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
         textLayout.setFillWidth(true);
 
-        // TODO: Call setWatchButtonAction via HomeController
+//        // TODO: Call setWatchButtonAction via HomeController
+//        watchButton.setOnAction(event -> {
+//            Movie movie = getItem();
+//            if (movie != null) {
+//                // Println is a placeholder for the actual action -> Will be implemented in the next task
+//                System.out.println("Added " + movie.getTitle() + " to watchlist");
+//                setWatchButtonAction(movie);
+//            }
+//        });
         watchButton.setOnAction(event -> {
             Movie movie = getItem();
             if (movie != null) {
-                // Println is a placeholder for the actual action -> Will be implemented in the next task
-                System.out.println("Added " + movie.getTitle() + " to watchlist");
-                setWatchButtonAction(movie);
+                if (watchButton.getText().equals("Add")) {
+                    // Add the movie to the watchlist
+                    // watchlist.add(movie);
+                    //watchButton.setGraphic(new ImageView(minusIcon));
+                    watchButton.getStyleClass().remove("button-plus");
+                    watchButton.getStyleClass().add("button-minus");
+                } else {
+                    // Remove the movie from the watchlist
+                    // watchlist.remove(movie);
+                    //watchButton.setGraphic(new ImageView(plusIcon));
+                    watchButton.getStyleClass().remove("button-minus");
+                    watchButton.getStyleClass().add("button-plus");
+                }
             }
         });
     }
@@ -54,6 +75,16 @@ public class MovieCell extends ListCell<Movie> {
         } else {
             updateTextLayout(movie);
             loadImage(movie.getImgUrl());
+            if (true /* check if movie is in watchlist */) {
+                watchButton.setText("Remove");
+                watchButton.getStyleClass().remove("button-plus");
+                watchButton.getStyleClass().add("button-minus");
+            } else {
+                watchButton.setText("Add");
+                watchButton.getStyleClass().remove("button-minus");
+                watchButton.getStyleClass().add("button-plus");
+            }
+            layout.prefWidthProperty().bind(getListView().widthProperty());
             setGraphic(layout);
         }
     }
@@ -72,7 +103,7 @@ public class MovieCell extends ListCell<Movie> {
         Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white;");
         descriptionLabel.setWrapText(true);
 
-        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel, watchButton);
+        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel); //, watchButton
     }
 
     private Label createStyledLabel(String text, double fontSize, String style) {

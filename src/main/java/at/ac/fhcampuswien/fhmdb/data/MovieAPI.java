@@ -88,7 +88,7 @@ public class MovieAPI {
         // Create Movie and attributes needed for the constructor
         String title = movieArray.get("title").getAsString();
         String description = movieArray.get("description").getAsString();
-        List<Genre> genres = new ArrayList<>();
+        List<Genre> genres;
         JsonElement genresElement = movieArray.get("genres");
         genres = setGenresToList(genresElement);
         int releaseYear = movieArray.get("releaseYear").getAsInt();
@@ -98,7 +98,8 @@ public class MovieAPI {
         List<String> writers = setListFromJsonElement(movieArray.get("writers"));
         List<String> mainCast = setListFromJsonElement(movieArray.get("mainCast"));
         String imgUrl = movieArray.get("imgUrl").getAsString();
-        Movie movie = new Movie(title, description, genres, releaseYear, rating, lengthInMinutes, directors, writers, mainCast, imgUrl);
+        String apiId = movieArray.get("id").getAsString();
+        Movie movie = new Movie(title, apiId, description, genres, releaseYear, rating, lengthInMinutes, directors, writers, mainCast, imgUrl);
         return movie;
     }
 

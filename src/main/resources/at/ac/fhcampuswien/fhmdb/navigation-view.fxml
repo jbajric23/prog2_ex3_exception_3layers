@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox spacing="10" styleClass="navigation-bar" xmlns:fx="http://javafx.com/fxml" fx:controller="at.ac.fhcampuswien.fhmdb.models.NavigationBarController">
+    <Button fx:id="watchlistButton" text="Watchlist" onAction="#openWatchlist" styleClass="navigation-button"/>
+    <Button fx:id="loginButton" text="Login" onAction="#openLogin" styleClass="navigation-button"/>
+    <Button fx:id="homeButton" text="Home" onAction="#goHome" styleClass="navigation-button"/>
+</HBox>
+
+
