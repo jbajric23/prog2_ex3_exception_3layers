@@ -1,7 +1,6 @@
 // WatchlistRepository.java
 package at.ac.fhcampuswien.fhmdb.data;
 
-import at.ac.fhcampuswien.fhmdb.data.WatchlistMovieEntity;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 
@@ -13,7 +12,7 @@ public class WatchlistRepository {
     private Dao<WatchlistMovieEntity, Long> dao;
 
 
-    public WatchlistRepository(DatabaseManager databaseManager) {
+    public WatchlistRepository(Database databaseManager) {
         try {
             dao = DaoManager.createDao(databaseManager.getConnectionSource(), WatchlistMovieEntity.class);
         } catch (SQLException e) {

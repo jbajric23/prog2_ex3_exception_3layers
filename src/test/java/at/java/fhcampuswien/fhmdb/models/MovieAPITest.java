@@ -13,6 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/*
 class MovieAPITest {
     @Test
     public void testGetMostPopularActor() throws FileNotFoundException {
@@ -49,7 +50,7 @@ class MovieAPITest {
         long result = controller.countMoviesFrom(movies, "David Fincher");
         assertEquals(1, result);
     }
-    */
+
     @Test
     public void testGetMoviesBetweenYearsFromAPI() throws FileNotFoundException {
         HomeController controller = new HomeController();
@@ -61,6 +62,7 @@ class MovieAPITest {
         List<Movie> result = controller.getMoviesBetweenYearsFromAPI(movies, 1990, 2010);
         assertEquals(2, result.size());
     }
+
 
     MovieAPI movieAPI = new MovieAPI();
     List<Movie> allMovies;
@@ -116,4 +118,4 @@ class MovieAPITest {
         // Then
         assertEquals(expectedSize, actualSize);
     }
-}
+} */

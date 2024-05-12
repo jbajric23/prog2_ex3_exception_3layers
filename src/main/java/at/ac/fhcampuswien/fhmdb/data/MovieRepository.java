@@ -1,18 +1,21 @@
 // MovieRepository.java
 package at.ac.fhcampuswien.fhmdb.data;
 
-import at.ac.fhcampuswien.fhmdb.data.MovieEntity;
+import at.ac.fhcampuswien.fhmdb.models.Movie;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+
+import static at.ac.fhcampuswien.fhmdb.data.MovieEntity.genresToString;
 
 public class MovieRepository {
 
     private Dao<MovieEntity, Long> movieDao;
 
-    public MovieRepository(DatabaseManager databaseManager) {
+    public MovieRepository(Database databaseManager) {
         try {
             movieDao = DaoManager.createDao(databaseManager.getConnectionSource(), MovieEntity.class);
         } catch (SQLException e) {
@@ -47,13 +50,18 @@ public class MovieRepository {
         }
     }
 
-    public int addAllMovies (List<MovieEntity> movies){
-        try {
-            return movieDao.create(movies);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 0;
+    public int addAllMovies (List<Movie> movies) {
+        boolean success = true;
+        for (Movie movie : movies) {
+            try {
+                movieDao.create(new MovieEntity(movie.getTitle(), movie.getApiId(), movie.getDescription(),
+                        genresToString(movie.getGenres()), movie.getReleaseYear(),
+                        movie.getRating(), movie.getLengthInMinutes(), movie.getImgUrl()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                success = false;
+            }
         }
+        return success ? 1 : 0;
     }
-
 }

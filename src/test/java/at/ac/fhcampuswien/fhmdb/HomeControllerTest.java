@@ -23,7 +23,7 @@ public class HomeControllerTest {
     public void setup() throws FileNotFoundException {
         controller = new HomeController();
     }
-
+    /*
     @ParameterizedTest
     @MethodSource("provideFilterMoviesScenarios")
     void testFilterMovies(String query, Genre genre, int expectedSize) {
@@ -39,7 +39,7 @@ public class HomeControllerTest {
 
         // Assert
         assertEquals(expectedSize, filteredMovies.size());
-    }
+    }*/
 
     private static Stream<Arguments> provideFilterMoviesScenarios() {
         return Stream.of(

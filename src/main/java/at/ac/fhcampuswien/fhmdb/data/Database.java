@@ -1,41 +1,47 @@
-// DatabaseManager.java
+// Database.java
 package at.ac.fhcampuswien.fhmdb.data;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
-public class DatabaseManager {
+public class Database {
 
-    private static final String DATABASE_URL = "jdbc:h2:mem:fhmdb";
+    private static final String DATABASE_URL = "jdbc:h2:file:./data/movies.db";
     private static final String USER_NAME = "username";
     private static final String PASSWORD = "password";
 
-    private Dao < WatchlistMovieEntity, Long > watchlistDao;
-    private Dao < MovieEntity, Long > movieDao;
-    private ConnectionSource connectionSource;
+    private Dao <WatchlistMovieEntity, Long> watchlistDao;
+    private Dao <MovieEntity, Long> movieDao;
+    private static ConnectionSource connectionSource;
 
-    public DatabaseManager() {
+    private static Database instance;
+
+    public Database() {
         try {
-            connectionSource = new JdbcConnectionSource(DATABASE_URL, USER_NAME, PASSWORD);
+            createConnectionsSource();
+            movieDao = DaoManager.createDao(connectionSource, MovieEntity.class);
+            watchlistDao = DaoManager.createDao(connectionSource, WatchlistMovieEntity.class);
+            createTables();
         } catch (SQLException e) {
-            e.printStackTrace();
+            // TODO: Implement new exception handling and Message to user in app
+            System.out.println(e.getMessage());
         }
+    }
+
+    private void createConnectionsSource() throws SQLException {
+        connectionSource = new JdbcConnectionSource(DATABASE_URL, USER_NAME, PASSWORD);
     }
 
     public ConnectionSource getConnectionSource() {
-        return connectionSource;
-    }
-
-    public void createConnectionsSource(){
-        try {
-            connectionSource = new JdbcConnectionSource(DATABASE_URL, USER_NAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if(instance == null){
+            instance = new Database();
         }
+        return connectionSource;
     }
 
     public void createTables() {
@@ -50,6 +56,8 @@ public class DatabaseManager {
     public void closeConnection() {
         if (connectionSource != null) {
             try {
+                watchlistDao.deleteBuilder().delete();
+                movieDao.deleteBuilder().delete();
                 connectionSource.close();
             } catch (SQLException e) {
                 System.err.println("Error closing the database connection: " + e.getMessage());
@@ -59,11 +67,4 @@ public class DatabaseManager {
         }
     }
 
-    public Dao < WatchlistMovieEntity, Long > getWatchlistDao() {
-        return watchlistDao;
-    }
-
-    public Dao < MovieEntity, Long > getMovieDao() {
-        return movieDao;
-    }
 }

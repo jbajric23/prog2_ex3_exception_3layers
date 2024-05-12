@@ -13,4 +13,6 @@ module at.ac.fhcampuswien.fhmdb {
     exports at.ac.fhcampuswien.fhmdb;
     exports at.ac.fhcampuswien.fhmdb.models;
     opens at.ac.fhcampuswien.fhmdb.models to javafx.fxml;
+    opens at.ac.fhcampuswien.fhmdb.data;
+    exports at.ac.fhcampuswien.fhmdb.data;
 }

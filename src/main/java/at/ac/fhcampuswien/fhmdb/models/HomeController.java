@@ -19,9 +19,9 @@ import javafx.stage.Stage;
 
 import org.controlsfx.control.CheckComboBox;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +52,7 @@ public class HomeController implements Initializable {
 
     // List for the watchlist movies
     public List<Movie> watchListMovies;
+
 
     public HomeController() {
         this.movieRepository = null; // oder setzen Sie einen Standardwert
@@ -171,21 +172,18 @@ public class HomeController implements Initializable {
         FXCollections.sort(observableMovies, comparator);
     }
 
-    public static void setWatchButtonAction(Movie movie) {
-        // This method sets the watch button
-        Stage stage = new Stage();
-        FhmdbApplication app = new FhmdbApplication();
-        try {
-            app.startWatchlistScene(stage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    protected void callDatabase(List<Movie> movies) {
+        //this method creates the database and adds the movies to it
+        Database database = new Database();
+        database.createTables();
+        MovieRepository movieRepo = new MovieRepository(database);
+        movieRepo.addAllMovies(movies);
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // initialize UI stuff
-
+        Database database = new Database();
         // Check if the URL contains the watchlist-view.fxml
         if (url.getPath().contains("watchlist-view.fxml")) {
             ObservableList<Movie> observableWatchListMovies = FXCollections.observableArrayList();
@@ -197,6 +195,8 @@ public class HomeController implements Initializable {
             watchListView.setCellFactory(movieListView -> new MovieCell());
         // Else block for the home-view.fxml
         } else {
+            database.createTables();
+            callDatabase(allMovies);
             observableMovies.addAll(allMovies);         // add dummy data to observable list
             movieListView.setItems(observableMovies);   // set data of observable list to list view
             movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
@@ -286,8 +286,8 @@ public class HomeController implements Initializable {
     }
     */
 
-
+    /*
     public void removeFromWatchlist(WatchlistMovieEntity watchlistMovie) {
         watchlistRepository.removeMovieFromWatchlist(watchlistMovie);
-    }
+    } */
 }

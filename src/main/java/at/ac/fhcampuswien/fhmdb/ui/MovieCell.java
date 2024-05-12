@@ -1,7 +1,9 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
+import at.ac.fhcampuswien.fhmdb.data.WatchlistMovieEntity;
+import at.ac.fhcampuswien.fhmdb.data.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
-import static at.ac.fhcampuswien.fhmdb.models.HomeController.setWatchButtonAction;
+import at.ac.fhcampuswien.fhmdb.models.ClickEventHandler;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -17,8 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static at.ac.fhcampuswien.fhmdb.data.MovieEntity.genresToString;
+
 //class done with quite a bit of ChatGPT help because of performance issues
-public class MovieCell extends ListCell<Movie> {
+public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
     private final ImageView movieImage = new ImageView();
     private final HBox layout = new HBox();
@@ -26,6 +30,7 @@ public class MovieCell extends ListCell<Movie> {
     //private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
     private final Button watchButton = new Button();
+    private WatchlistRepository watchlistRepository;
 //    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
 //    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
@@ -35,21 +40,12 @@ public class MovieCell extends ListCell<Movie> {
         layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
         textLayout.setFillWidth(true);
 
-//        // TODO: Call setWatchButtonAction via HomeController
-//        watchButton.setOnAction(event -> {
-//            Movie movie = getItem();
-//            if (movie != null) {
-//                // Println is a placeholder for the actual action -> Will be implemented in the next task
-//                System.out.println("Added " + movie.getTitle() + " to watchlist");
-//                setWatchButtonAction(movie);
-//            }
-//        });
+
         watchButton.setOnAction(event -> {
             Movie movie = getItem();
             if (movie != null) {
                 if (watchButton.getText().equals("Add")) {
-                    // Add the movie to the watchlist
-                    // watchlist.add(movie);
+                    onClick();
                     //watchButton.setGraphic(new ImageView(minusIcon));
                     watchButton.getStyleClass().remove("button-plus");
                     watchButton.getStyleClass().add("button-minus");
@@ -62,6 +58,22 @@ public class MovieCell extends ListCell<Movie> {
                 }
             }
         });
+    }
+
+    public MovieCell(WatchlistRepository watchlistRepository) {
+        this.watchlistRepository = watchlistRepository;
+    }
+
+
+    public void onClick() {
+        //This method is called when the cell is clicked
+        Movie movie = getItem();
+        if (movie != null) {
+            WatchlistMovieEntity watchlistMovieEntity = new WatchlistMovieEntity();
+            watchlistMovieEntity.setApiId(movie.getApiId());
+            watchlistMovieEntity.setId(1L);
+            watchlistRepository.addMovieToWatchlist(watchlistMovieEntity);
+        }
     }
 
     @Override

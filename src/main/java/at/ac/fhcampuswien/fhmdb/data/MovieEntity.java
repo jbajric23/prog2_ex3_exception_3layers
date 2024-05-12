@@ -2,6 +2,7 @@
 // MovieEntity.java
 package at.ac.fhcampuswien.fhmdb.data;
 
+import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -14,7 +15,7 @@ public class MovieEntity {
    @DatabaseField(generatedId = true)
     private long id;
 
-    @DatabaseField(id = true)
+    @DatabaseField()
     private String apiId;
 
     @DatabaseField
@@ -39,9 +40,7 @@ public class MovieEntity {
     private String imgUrl;
 
 
-    public MovieEntity() {
-
-    }
+    public MovieEntity() {}
 
     public MovieEntity(String title, String apiId, String description, String genres, int releaseYear, double rating, int lengthInMinutes, String imgUrl) {
         this.title = title;
@@ -54,8 +53,8 @@ public class MovieEntity {
         this.imgUrl = imgUrl;
     }
 
-    public String genresToString() {
-        return genres;
+    public static String genresToString(List<Genre> genres) {
+        return genres.toString();
     }
 
     public List <MovieEntity> fromMovies (List <MovieEntity> movies) {
