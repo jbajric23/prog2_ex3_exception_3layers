@@ -5,6 +5,7 @@ import at.ac.fhcampuswien.fhmdb.data.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.ClickEventHandler;
 
+import at.ac.fhcampuswien.fhmdb.models.WatchlistController;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -19,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static at.ac.fhcampuswien.fhmdb.data.MovieEntity.genresToString;
-
 //class done with quite a bit of ChatGPT help because of performance issues
 public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
@@ -30,11 +29,13 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
     //private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
     private final Button watchButton = new Button();
+    private  WatchlistController watchlistController;
     private WatchlistRepository watchlistRepository;
 //    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
 //    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
-    public MovieCell() {
+    public MovieCell( WatchlistController watchlistController) {
+        this.watchlistController = watchlistController;
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
         layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
@@ -45,14 +46,13 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
             Movie movie = getItem();
             if (movie != null) {
                 if (watchButton.getText().equals("Add")) {
-                    onClick();
-                    //watchButton.setGraphic(new ImageView(minusIcon));
+                    watchlistController.addToWatchlist(movie.getApiId());
+                    watchButton.setText("Remove");
                     watchButton.getStyleClass().remove("button-plus");
                     watchButton.getStyleClass().add("button-minus");
                 } else {
-                    // Remove the movie from the watchlist
-                    // watchlist.remove(movie);
-                    //watchButton.setGraphic(new ImageView(plusIcon));
+                    watchlistController.removeFromWatchlist(movie.getApiId());
+                    watchButton.setText("Add");
                     watchButton.getStyleClass().remove("button-minus");
                     watchButton.getStyleClass().add("button-plus");
                 }
@@ -60,8 +60,31 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
         });
     }
 
-    public MovieCell(WatchlistRepository watchlistRepository) {
+
+    public MovieCell(WatchlistController watchlistController, WatchlistRepository watchlistRepository) {
+        this.watchlistController = watchlistController;
         this.watchlistRepository = watchlistRepository;
+        movieImage.setFitWidth(100);
+        movieImage.setPreserveRatio(true);
+        layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
+        textLayout.setFillWidth(true);
+
+        watchButton.setOnAction(event -> {
+            Movie movie = getItem();
+            if (movie != null) {
+                if (watchButton.getText().equals("Add")) {
+                    watchlistController.addToWatchlist(movie.getApiId());
+                    watchButton.setText("Remove");
+                    watchButton.getStyleClass().remove("button-plus");
+                    watchButton.getStyleClass().add("button-minus");
+                } else {
+                    watchlistController.removeFromWatchlist(movie.getApiId());
+                    watchButton.setText("Add");
+                    watchButton.getStyleClass().remove("button-minus");
+                    watchButton.getStyleClass().add("button-plus");
+                }
+            }
+        });
     }
 
 
@@ -88,11 +111,11 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
             updateTextLayout(movie);
             loadImage(movie.getImgUrl());
             if (true /* check if movie is in watchlist */) {
-                watchButton.setText("Remove");
+                watchButton.setText("Add");
                 watchButton.getStyleClass().remove("button-plus");
                 watchButton.getStyleClass().add("button-minus");
             } else {
-                watchButton.setText("Add");
+                watchButton.setText("Remove");
                 watchButton.getStyleClass().remove("button-minus");
                 watchButton.getStyleClass().add("button-plus");
             }

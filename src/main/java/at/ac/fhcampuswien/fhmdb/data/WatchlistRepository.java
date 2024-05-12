@@ -46,4 +46,11 @@ public class WatchlistRepository {
     }
 
     // other methods...
+    public void clearAll() {
+        try {
+            dao.delete(dao.queryForAll());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

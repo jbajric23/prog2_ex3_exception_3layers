@@ -52,16 +52,19 @@ public class HomeController implements Initializable {
 
     // List for the watchlist movies
     public List<Movie> watchListMovies;
+    private final WatchlistController watchlistController;
 
 
     public HomeController() {
         this.movieRepository = null; // oder setzen Sie einen Standardwert
-        this.watchlistRepository = null; // oder setzen Sie einen Standardwert
+        this.watchlistRepository = new WatchlistRepository(new Database());
+        this.watchlistController = new WatchlistController(watchlistRepository);
     }
 
-    public HomeController(MovieRepository movieRepository, WatchlistRepository watchlistRepository) {
+    public HomeController(MovieRepository movieRepository, WatchlistRepository watchlistRepository, WatchlistController watchlistController) {
         this.movieRepository = movieRepository;
         this.watchlistRepository = watchlistRepository;
+        this.watchlistController = new WatchlistController(watchlistRepository);
         try {
             MovieAPI apiMovies = new MovieAPI();
             allMovies = apiMovies.callAPI(null);
@@ -184,6 +187,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // initialize UI stuff
         Database database = new Database();
+        watchlistRepository.clearAll();
         // Check if the URL contains the watchlist-view.fxml
         if (url.getPath().contains("watchlist-view.fxml")) {
             ObservableList<Movie> observableWatchListMovies = FXCollections.observableArrayList();
@@ -192,15 +196,14 @@ public class HomeController implements Initializable {
             watchListMovies = movies;
             observableWatchListMovies.addAll(watchListMovies);
             watchListView.setItems(observableWatchListMovies);
-            watchListView.setCellFactory(movieListView -> new MovieCell());
-        // Else block for the home-view.fxml
+            movieListView.setCellFactory(movieListView -> new MovieCell(watchlistController));
+            watchListView.setCellFactory(watchListView -> new MovieCell(watchlistController));        // Else block for the home-view.fxml
         } else {
             database.createTables();
             callDatabase(allMovies);
             observableMovies.addAll(allMovies);         // add dummy data to observable list
             movieListView.setItems(observableMovies);   // set data of observable list to list view
-            movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
-        }
+            movieListView.setCellFactory(movieListView -> new MovieCell(new WatchlistController(new WatchlistRepository(new Database()))));        }
 
         // Add genre items to the genreComboBox
         genreComboBox.setPromptText("Filter by Genre");

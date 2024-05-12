@@ -29,5 +29,4 @@ public class WatchlistMovieEntity {
         this.id = id;
     }
 
-    // getters and setters...
 }
