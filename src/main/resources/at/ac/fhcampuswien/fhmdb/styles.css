@@ -54,6 +54,8 @@
     -fx-pref-height: 25px;
 }
 
+
+
 .my-check-combo-box {
     -fx-background-color: #ffffff;
     -fx-text-fill: #000000;
@@ -61,6 +63,38 @@
     -fx-pref-height: 23px;
 }
 
+.navigation-bar {
+    -fx-background-color: #333;
+    -fx-padding: 10px;
+}
+
+.navigation-button {
+    -fx-background-color: #f5c518;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+}
+
+.button-plus {
+  /*  -fx-background-image: url(icons/plus-icon.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center; */
+    -fx-background-color: #f5c518;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+}
+
+.button-minus {
+    /*-fx-background-image: url(icons/minus-icon.png);
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center; */
+    -fx-background-color: #f5c518;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+
+}
 
 
 

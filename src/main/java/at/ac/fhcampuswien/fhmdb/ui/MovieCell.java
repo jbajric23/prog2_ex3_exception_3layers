@@ -1,6 +1,12 @@
 package at.ac.fhcampuswien.fhmdb.ui;
 
+import at.ac.fhcampuswien.fhmdb.data.WatchlistMovieEntity;
+import at.ac.fhcampuswien.fhmdb.data.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import at.ac.fhcampuswien.fhmdb.models.ClickEventHandler;
+
+import at.ac.fhcampuswien.fhmdb.models.WatchlistController;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
@@ -13,19 +19,84 @@ import javafx.scene.text.FontWeight;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 //class done with quite a bit of ChatGPT help because of performance issues
-public class MovieCell extends ListCell<Movie> {
+public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
     private final ImageView movieImage = new ImageView();
     private final HBox layout = new HBox();
     private final VBox textLayout = new VBox();
+    //private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
+    private final Button watchButton = new Button();
+    private  WatchlistController watchlistController;
+    private WatchlistRepository watchlistRepository;
+//    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
+//    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
-    public MovieCell() {
+    public MovieCell(WatchlistController watchlistController) {
+        this.watchlistController = watchlistController;
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
-        layout.getChildren().addAll(movieImage, textLayout);
+        layout.getChildren().addAll(movieImage, textLayout); // Add watchButton to layout
         textLayout.setFillWidth(true);
+
+
+        watchButton.setOnAction(event -> {
+            Movie movie = getItem();
+            if (movie != null) {
+                if (watchButton.getText().equals("Add")) {
+                    watchlistController.addToWatchlist(movie.getApiId());
+                    watchButton.setText("Remove");
+                    watchButton.getStyleClass().remove("button-plus");
+                    watchButton.getStyleClass().add("button-minus");
+                } else {
+                    watchlistController.removeFromWatchlist(movie.getApiId());
+                    watchButton.setText("Add");
+                    watchButton.getStyleClass().remove("button-minus");
+                    watchButton.getStyleClass().add("button-plus");
+                }
+            }
+        });
+    }
+
+
+    public MovieCell(WatchlistController watchlistController, WatchlistRepository watchlistRepository) {
+        this.watchlistController = watchlistController;
+        this.watchlistRepository = watchlistRepository;
+        movieImage.setFitWidth(100);
+        movieImage.setPreserveRatio(true);
+        layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
+        textLayout.setFillWidth(true);
+
+        watchButton.setOnAction(event -> {
+            Movie movie = getItem();
+            if (movie != null) {
+                if (watchButton.getText().equals("Add")) {
+                    watchlistController.addToWatchlist(movie.getApiId());
+                    watchButton.setText("Remove");
+                    watchButton.getStyleClass().remove("button-plus");
+                    watchButton.getStyleClass().add("button-minus");
+                } else {
+                    watchlistController.removeFromWatchlist(movie.getApiId());
+                    watchButton.setText("Add");
+                    watchButton.getStyleClass().remove("button-minus");
+                    watchButton.getStyleClass().add("button-plus");
+                }
+            }
+        });
+    }
+
+
+    public void onClick() {
+        //This method is called when the cell is clicked
+        Movie movie = getItem();
+        if (movie != null) {
+            WatchlistMovieEntity watchlistMovieEntity = new WatchlistMovieEntity();
+            watchlistMovieEntity.setApiId(movie.getApiId());
+            watchlistMovieEntity.setId(1L);
+            watchlistRepository.addMovieToWatchlist(watchlistMovieEntity);
+        }
     }
 
     @Override
@@ -39,6 +110,16 @@ public class MovieCell extends ListCell<Movie> {
         } else {
             updateTextLayout(movie);
             loadImage(movie.getImgUrl());
+            if (true /* check if movie is in watchlist */) {
+                watchButton.setText("Add");
+                watchButton.getStyleClass().remove("button-plus");
+                watchButton.getStyleClass().add("button-minus");
+            } else {
+                watchButton.setText("Remove");
+                watchButton.getStyleClass().remove("button-minus");
+                watchButton.getStyleClass().add("button-plus");
+            }
+            layout.prefWidthProperty().bind(getListView().widthProperty());
             setGraphic(layout);
         }
     }
@@ -57,7 +138,7 @@ public class MovieCell extends ListCell<Movie> {
         Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white;");
         descriptionLabel.setWrapText(true);
 
-        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel);
+        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel, watchButton); //, watchButton
     }
 
     private Label createStyledLabel(String text, double fontSize, String style) {
@@ -77,6 +158,7 @@ public class MovieCell extends ListCell<Movie> {
         }
         movieImage.setImage(image);
     }
+
 }
 
 

@@ -1,13 +1,13 @@
-package at.ac.fhcampuswien.fhmdb;
+package at.ac.fhcampuswien.fhmdb.models;
 
-
-import at.ac.fhcampuswien.fhmdb.models.Genre;
-import at.ac.fhcampuswien.fhmdb.models.Movie;
-import at.ac.fhcampuswien.fhmdb.models.MovieAPI;
+import at.ac.fhcampuswien.fhmdb.FhmdbApplication;
+import at.ac.fhcampuswien.fhmdb.data.*;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
+
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXListView;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,29 +15,29 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+
 import org.controlsfx.control.CheckComboBox;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class HomeController implements Initializable {
     @FXML
-    public JFXButton searchBtn;
+    public JFXButton searchBtn, resetFilterBtn, sortBtn;
 
     @FXML
     public TextField searchField;
 
     @FXML
-    public JFXListView movieListView;
+    public JFXListView movieListView, watchListView;
+
 
     @FXML
     public JFXComboBox genreComboBox;
-
-
 
     @FXML
     CheckComboBox releaseYearBox;
@@ -47,13 +47,32 @@ public class HomeController implements Initializable {
     @FXML
     ComboBox ratingFromBox;
 
+    private final MovieRepository movieRepository;
+    private final WatchlistRepository watchlistRepository;
+
+    // List for the watchlist movies
+    public List<Movie> watchListMovies;
+    private final WatchlistController watchlistController;
 
 
-    @FXML
-    public JFXButton sortBtn;
+    public HomeController() {
+        this.movieRepository = null; // oder setzen Sie einen Standardwert
+        this.watchlistRepository = new WatchlistRepository(new Database());
+        this.watchlistController = new WatchlistController(watchlistRepository);
+    }
 
-    @FXML
-    public JFXButton resetFilterBtn;
+    public HomeController(MovieRepository movieRepository, WatchlistRepository watchlistRepository, WatchlistController watchlistController) {
+        this.movieRepository = movieRepository;
+        this.watchlistRepository = watchlistRepository;
+        this.watchlistController = new WatchlistController(watchlistRepository);
+        try {
+            MovieAPI apiMovies = new MovieAPI();
+            allMovies = apiMovies.callAPI(null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public List<Movie> allMovies;
     // Call initializeMovies method with a FileReader object as parameter for better testing possibilities
@@ -63,9 +82,15 @@ public class HomeController implements Initializable {
             allMovies = apiMovies.callAPI(null);
         } catch (IOException e) {
             throw new RuntimeException(e);
+            // could be a possible solution to the problem
+            /* MovieRepository movieApiRepository = new MovieRepository(new Database());
+            allMovies = movieApiRepository.getAllMovies().stream()
+                    .map(movieEntity -> new Movie(movie.getTitle(), movieEntity.getApiId(), movieEntity.getDescription(),
+                            Arrays.asList(movieEntity.getGenres().split(",")), movieEntity.getReleaseYear(),
+                            movieEntity.getRating(), movieEntity.getLengthInMinutes(), movieEntity.getImgUrl()))
+                    .collect(Collectors.toList()); */
         }
     }
-
     // David
     public String getMostPopularActor(List<Movie> movies) {
         MovieAPI movieAPI = new MovieAPI();
@@ -141,8 +166,7 @@ public class HomeController implements Initializable {
 
     public ObservableList<Movie> observableMovies = FXCollections.observableArrayList();   // automatically updates corresponding UI elements when underlying data changes
 
-    public HomeController() throws FileNotFoundException {
-    }
+
 
     public void setAllMovies(List<Movie> allMovies) {
             this.allMovies = allMovies;
@@ -158,14 +182,38 @@ public class HomeController implements Initializable {
         FXCollections.sort(observableMovies, comparator);
     }
 
+    protected void callDatabase(List<Movie> movies) {
+        //this method creates the database and adds the movies to it
+        Database database = new Database();
+        database.createTables();
+        MovieRepository movieRepo = new MovieRepository(database);
+        if (movieRepo.getAllMovies().isEmpty()) {
+            // If the database is empty, add the movies
+            movieRepo.addAllMovies(movies);
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // adds all dummy data movies to the observable list
-        observableMovies.addAll(allMovies);
-
         // initialize UI stuff
-        movieListView.setItems(observableMovies);   // set data of observable list to list view
-        movieListView.setCellFactory(movieListView -> new MovieCell()); // use custom cell factory to display data
+        Database database = new Database();
+        //watchlistRepository.clearAll();
+        // Check if the URL contains the watchlist-view.fxml
+        if (url.getPath().contains("watchlist-view.fxml")) {
+            ObservableList<Movie> observableWatchListMovies = FXCollections.observableArrayList();
+            // Here will the watchlist movies be loaded and added
+            List<Movie> movies = new ArrayList<>();
+            watchListMovies = movies;
+            observableWatchListMovies.addAll(watchListMovies);
+            watchListView.setItems(observableWatchListMovies);
+            watchListView.setCellFactory(watchListView -> new MovieCell(watchlistController));
+        } else {
+            database.createTables();
+            callDatabase(allMovies);
+            observableMovies.addAll(allMovies);         // add dummy data to observable list
+            movieListView.setItems(observableMovies);   // set data of observable list to list view
+            movieListView.setCellFactory(movieListView -> new MovieCell(new WatchlistController(new WatchlistRepository(new Database()))));
+        }
 
         // Add genre items to the genreComboBox
         genreComboBox.setPromptText("Filter by Genre");
@@ -187,14 +235,8 @@ public class HomeController implements Initializable {
 
 
         searchBtn.setOnAction(actionEvent -> {
-            System.out.println("Filter button clicked"); // Debug output
-
             String query = searchField.getText();
-            System.out.println("Query: " + query); // Debug output
-
             Genre genre = (Genre) genreComboBox.getSelectionModel().getSelectedItem();
-            System.out.println("Genre: " + genre); // Debug output
-
             List<Integer> releaseYears = releaseYearBox.getCheckModel().getCheckedItems();
             Integer ratingValue = (Integer) ratingFromBox.getSelectionModel().getSelectedItem();
             Double rating = null;
@@ -214,7 +256,7 @@ public class HomeController implements Initializable {
             observableMovies.addAll(filteredMovies);
 
             //possibility to sort a filtered selection of the movies
-            if(sortBtn.getText().equals("Sort (asc)")) {
+            if (sortBtn.getText().equals("Sort (asc)")) {
                 sortMovies(true);
             } else {
                 sortMovies(false);
@@ -246,6 +288,19 @@ public class HomeController implements Initializable {
                 sortBtn.setText("Sort (asc)");
             }
         });
-
     }
+
+
+    /*
+    public void addToWatchlist(MovieEntity movie) {
+        WatchlistMovieEntity watchlistMovie = new WatchlistMovieEntity();
+        watchlistMovie.setApiId(movie.getApiId());
+        watchlistRepository.addMovieToWatchlist(watchlistMovie);
+    }
+    */
+
+    /*
+    public void removeFromWatchlist(WatchlistMovieEntity watchlistMovie) {
+        watchlistRepository.removeMovieFromWatchlist(watchlistMovie);
+    } */
 }

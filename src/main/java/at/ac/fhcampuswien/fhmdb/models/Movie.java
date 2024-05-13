@@ -10,7 +10,7 @@ public class Movie {
     private String imgUrl;
     private int releaseYear; // new attribute
     private double rating; // new attribute
-
+    private String apiId; // id from the API
     private int lengthInMinutes; // new attribute
 
     private List<Genre> genres;
@@ -18,7 +18,7 @@ public class Movie {
     private List<String> writers;
     private List<String> mainCast;
 
-    public Movie(String title,String description,List<Genre> genres, int releaseYear, double rating, int lengthInMinutes, List<String> directors, List<String> writers, List<String> mainCast, String imgUrl){
+    public Movie(String title, String apiId,String description,List<Genre> genres, int releaseYear, double rating, int lengthInMinutes, List<String> directors, List<String> writers, List<String> mainCast, String imgUrl){
         this.title = title;
         this.description = description;
         this.genres = genres;
@@ -29,9 +29,16 @@ public class Movie {
         this.directors = directors;
         this.writers = writers;
         this.mainCast = mainCast;
+        this.apiId = apiId;
     }
 
+    public String getApiId() {
+        return apiId;
+    }
 
+    public void setApiId(String apiId) {
+        this.apiId = apiId;
+    }
 
     public String getTitle() {
         return title;
