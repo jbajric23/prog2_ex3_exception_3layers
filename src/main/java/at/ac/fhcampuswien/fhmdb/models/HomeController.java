@@ -82,6 +82,13 @@ public class HomeController implements Initializable {
             allMovies = apiMovies.callAPI(null);
         } catch (IOException e) {
             throw new RuntimeException(e);
+            // could be a possible solution to the problem
+            /* MovieRepository movieApiRepository = new MovieRepository(new Database());
+            allMovies = movieApiRepository.getAllMovies().stream()
+                    .map(movieEntity -> new Movie(movie.getTitle(), movieEntity.getApiId(), movieEntity.getDescription(),
+                            Arrays.asList(movieEntity.getGenres().split(",")), movieEntity.getReleaseYear(),
+                            movieEntity.getRating(), movieEntity.getLengthInMinutes(), movieEntity.getImgUrl()))
+                    .collect(Collectors.toList()); */
         }
     }
     // David
