@@ -4,8 +4,9 @@ import at.ac.fhcampuswien.fhmdb.data.WatchlistMovieEntity;
 import at.ac.fhcampuswien.fhmdb.data.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.ClickEventHandler;
+import at.ac.fhcampuswien.fhmdb.models.HomeController;
 
-import at.ac.fhcampuswien.fhmdb.models.WatchlistController;
+//import at.ac.fhcampuswien.fhmdb.models.WatchlistController;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -20,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
+
 //class done with quite a bit of ChatGPT help because of performance issues
 public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
@@ -29,13 +32,14 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
     //private final Button watchButton = new Button("Watchlist"); // New Watchlist button
     private static final Map<String, Image> imageCache = new HashMap<>();
     private final Button watchButton = new Button();
-    private  WatchlistController watchlistController;
+    //private  WatchlistController watchlistController;
+    private HomeController homeController;
     private WatchlistRepository watchlistRepository;
 //    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
 //    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
-    public MovieCell( WatchlistController watchlistController) {
-        this.watchlistController = watchlistController;
+    public MovieCell( HomeController homeController) {
+        this.homeController = homeController;
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
         layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
@@ -46,23 +50,23 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
             Movie movie = getItem();
             if (movie != null) {
                 if (watchButton.getText().equals("Add")) {
-                    watchlistController.addToWatchlist(movie.getApiId());
+                    homeController.addToWatchlist(movie.getApiId());
                     watchButton.setText("Remove");
                     watchButton.getStyleClass().remove("button-plus");
                     watchButton.getStyleClass().add("button-minus");
                 } else {
-                    watchlistController.removeFromWatchlist(movie.getApiId());
+                    homeController.removeFromWatchlist(movie.getApiId());
                     watchButton.setText("Add");
                     watchButton.getStyleClass().remove("button-minus");
                     watchButton.getStyleClass().add("button-plus");
                 }
+
             }
         });
     }
 
-
-    public MovieCell(WatchlistController watchlistController, WatchlistRepository watchlistRepository) {
-        this.watchlistController = watchlistController;
+    public MovieCell(HomeController combinedController, WatchlistRepository watchlistRepository) {
+        this.homeController = combinedController;
         this.watchlistRepository = watchlistRepository;
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
@@ -70,22 +74,28 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
         textLayout.setFillWidth(true);
 
         watchButton.setOnAction(event -> {
-            Movie movie = getItem();
-            if (movie != null) {
-                if (watchButton.getText().equals("Add")) {
-                    watchlistController.addToWatchlist(movie.getApiId());
-                    watchButton.setText("Remove");
-                    watchButton.getStyleClass().remove("button-plus");
-                    watchButton.getStyleClass().add("button-minus");
-                } else {
-                    watchlistController.removeFromWatchlist(movie.getApiId());
-                    watchButton.setText("Add");
-                    watchButton.getStyleClass().remove("button-minus");
-                    watchButton.getStyleClass().add("button-plus");
-                }
-            }
-        });
+    Movie movie = getItem();
+    if (movie != null) {
+        if (watchButton.getText().equals("Add")) {
+            homeController.addToWatchlist(movie.getApiId());
+        } else {
+            combinedController.removeFromWatchlist(movie.getApiId());
+        }
+        // Überprüfen Sie den Zustand des Films in der Watchlist direkt nach dem Hinzufügen oder Entfernen
+        if (watchlistRepository.isInWatchlist(movie.getApiId())) {
+            watchButton.setText("Remove");
+            watchButton.getStyleClass().remove("button-plus");
+            watchButton.getStyleClass().add("button-minus");
+        } else {
+            watchButton.setText("Add");
+            watchButton.getStyleClass().remove("button-minus");
+            watchButton.getStyleClass().add("button-plus");
+        }
+        getListView().refresh();  // Refresh the ListView to update the button state
     }
+    });
+    }
+
 
 
     public void onClick() {
@@ -101,7 +111,6 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 
     @Override
     protected void updateItem(Movie movie, boolean empty) {
-        //This is a method that is called whenever the cell needs to be updated
         super.updateItem(movie, empty);
 
         if (empty || movie == null) {
@@ -110,21 +119,35 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
         } else {
             updateTextLayout(movie);
             loadImage(movie.getImgUrl());
-            if (true /* check if movie is in watchlist */) {
-                watchButton.setText("Add");
+
+            // Check if the movie is in the watchlist
+            boolean isInWatchlist = watchlistRepository.isInWatchlist(movie.getApiId());
+            watchButton.setText(isInWatchlist ? "Remove" : "Add");
+            if (isInWatchlist) {
                 watchButton.getStyleClass().remove("button-plus");
                 watchButton.getStyleClass().add("button-minus");
             } else {
-                watchButton.setText("Remove");
                 watchButton.getStyleClass().remove("button-minus");
                 watchButton.getStyleClass().add("button-plus");
             }
-            layout.prefWidthProperty().bind(getListView().widthProperty());
+
+            watchButton.setOnAction(event -> {
+                if (watchButton.getText().equals("Add")) {
+                    homeController.addToWatchlist(movie.getApiId());
+                } else {
+                    homeController.removeFromWatchlist(movie.getApiId());
+                }
+                // Refresh the ListView to update the button state
+                getListView().refresh();
+            });
+
+            layout.prefWidthProperty().bind(getListView().widthProperty().subtract(2)); // Adjust for padding or borders
             setGraphic(layout);
         }
     }
+
     private void updateTextLayout(Movie movie) {
-        //This method updates the text layout with the movie information
+        //This method updates the text layout with the movie information;
         textLayout.getChildren().clear();
 
         Label titleLabel = createStyledLabel(movie.getTitle(), 20, "-fx-text-fill: #FFD700;"); // Yellow for title
@@ -135,8 +158,9 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
         Label lengthLabel = createStyledLabel("Length: " + movie.getLengthInMinutes() + " min", 12, "-fx-text-fill: white;");
         String genresText = movie.getGenres().stream().map(Enum::name).collect(Collectors.joining(", "));
         Label genresLabel = createStyledLabel("Genres: " + genresText, 12, "-fx-text-fill: white;");
-        Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white;");
-        descriptionLabel.setWrapText(true);
+        Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white; -fx-pref-width: 550px;");
+        descriptionLabel.setWrapText(true) ; // Wrap text
+
 
         textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel); //, watchButton
     }

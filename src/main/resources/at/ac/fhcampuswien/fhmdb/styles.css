@@ -38,6 +38,14 @@
     -fx-padding: 2;
 }
 
+.movie-description {
+    -fx-pref-width: 200px; /* Set preferred width */
+}
+
+.add-remove-button {
+    -fx-alignment: CENTER-RIGHT;
+}
+
 .filter-combo-box {
     -fx-background-color: white;
     -fx-text-fill: #ffffff;
@@ -68,7 +76,14 @@
     -fx-padding: 10px;
 }
 
-.navigation-button {
+.watchlist-button {
+    -fx-background-color: #f5c518;
+    -fx-text-fill: #333;
+    -fx-font-size: 14px;
+    -fx-padding: 5px 10px;
+}
+
+.home-button {
     -fx-background-color: #f5c518;
     -fx-text-fill: #333;
     -fx-font-size: 14px;

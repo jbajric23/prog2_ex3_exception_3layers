@@ -68,4 +68,14 @@ public class MovieRepository {
         }
         return success ? 1 : 0;
     }
+
+    public Integer[] getYears() {
+        try {
+            List<MovieEntity> movies = movieDao.queryForAll();
+            return movies.stream().map(MovieEntity::getReleaseYear).distinct().toArray(Integer[]::new);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Integer[0];
+        }
+    }
 }

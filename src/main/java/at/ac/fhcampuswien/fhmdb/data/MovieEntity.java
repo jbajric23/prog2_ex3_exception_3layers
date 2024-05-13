@@ -64,5 +64,14 @@ public class MovieEntity {
     public List <Movie> toMovies (List <Movie> movies) {
         return movies;
     }
+
+    public MovieEntity getMovieEntity(String apiId) {
+        System.out.println(MovieEntity.class.getName() + " getMovieEntity called with apiId: " + apiId);
+        return this;
+    }
+
+    public Object getReleaseYear() {
+        return releaseYear;
+    }
 }
 

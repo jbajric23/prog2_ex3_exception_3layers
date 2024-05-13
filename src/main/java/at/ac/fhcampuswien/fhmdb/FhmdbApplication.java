@@ -15,17 +15,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class FhmdbApplication extends Application {
-    /*
-    @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource("home-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 890, 620);
-        scene.getStylesheets().add(Objects.requireNonNull(FhmdbApplication.class.getResource("styles.css")).toExternalForm());
-        stage.setTitle("FHMDb");
-        stage.setScene(scene);
-        stage.show();
-    }
-    */
+
     private MovieRepository movieRepository = new MovieRepository();
 
     @Override
@@ -41,30 +31,15 @@ public class FhmdbApplication extends Application {
             if (e instanceof SQLException) {
                 throw new DatabaseException("Database error: " + e.getMessage());
             } else if (e instanceof IOException) {
+                e.printStackTrace(); // print the full stack trace of the error
                 throw new MovieApiException("Movie API error: " + e.getMessage());
             } else {
+                e.printStackTrace(); // print the full stack trace of the error
                 throw new RuntimeException("Unexpected error: " + e.getMessage());
             }
         }
     }
 
-
-    /**
-     * Starts the watchlist scene
-     * @param stage the stage to show the scene on
-     * @throws IOException if the fxml file could not be loaded
-     */
-
-    /*
-    public void startWatchlistScene(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource("watchlist-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 890, 620);
-        scene.getStylesheets().add(Objects.requireNonNull(FhmdbApplication.class.getResource("styles.css")).toExternalForm());
-        stage.setTitle("FHMDb - Watchlist");
-        stage.setScene(scene);
-        stage.show();
-    }
-    */
     public void startWatchlistScene(Stage stage) throws DatabaseException, MovieApiException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource("watchlist-view.fxml"));
@@ -83,6 +58,32 @@ public class FhmdbApplication extends Application {
             }
         }
     }
+
+
+    public static void main(String[] args) {
+        launch();
+    }
+}
+
+
+
+/**
+ * Starts the watchlist scene
+ * @param stage the stage to show the scene on
+ * @throws IOException if the fxml file could not be loaded
+ */
+
+    /*
+    public void startWatchlistScene(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource("watchlist-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 890, 620);
+        scene.getStylesheets().add(Objects.requireNonNull(FhmdbApplication.class.getResource("styles.css")).toExternalForm());
+        stage.setTitle("FHMDb - Watchlist");
+        stage.setScene(scene);
+        stage.show();
+    }
+    */
+
     /*
     private void cacheMovies() throws DatabaseException, MovieApiException {
         try {
@@ -101,9 +102,16 @@ public class FhmdbApplication extends Application {
         }
     }
     */
-    //private List<MovieEntity> fetchMoviesFromApi() throws IOException {}
+//private List<MovieEntity> fetchMoviesFromApi() throws IOException {}
 
-    public static void main(String[] args) {
-        launch();
+/*
+    @Override
+    public void start(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(FhmdbApplication.class.getResource("home-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 890, 620);
+        scene.getStylesheets().add(Objects.requireNonNull(FhmdbApplication.class.getResource("styles.css")).toExternalForm());
+        stage.setTitle("FHMDb");
+        stage.setScene(scene);
+        stage.show();
     }
-}
+    */
