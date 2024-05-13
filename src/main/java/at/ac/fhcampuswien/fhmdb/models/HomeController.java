@@ -180,7 +180,10 @@ public class HomeController implements Initializable {
         Database database = new Database();
         database.createTables();
         MovieRepository movieRepo = new MovieRepository(database);
-        movieRepo.addAllMovies(movies);
+        if (movieRepo.getAllMovies().isEmpty()) {
+            // If the database is empty, add the movies
+            movieRepo.addAllMovies(movies);
+        }
     }
 
     @Override
