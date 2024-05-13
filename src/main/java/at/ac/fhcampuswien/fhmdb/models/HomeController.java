@@ -190,7 +190,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // initialize UI stuff
         Database database = new Database();
-        watchlistRepository.clearAll();
+        //watchlistRepository.clearAll();
         // Check if the URL contains the watchlist-view.fxml
         if (url.getPath().contains("watchlist-view.fxml")) {
             ObservableList<Movie> observableWatchListMovies = FXCollections.observableArrayList();
@@ -199,14 +199,14 @@ public class HomeController implements Initializable {
             watchListMovies = movies;
             observableWatchListMovies.addAll(watchListMovies);
             watchListView.setItems(observableWatchListMovies);
-            movieListView.setCellFactory(movieListView -> new MovieCell(watchlistController));
-            watchListView.setCellFactory(watchListView -> new MovieCell(watchlistController));        // Else block for the home-view.fxml
+            watchListView.setCellFactory(watchListView -> new MovieCell(watchlistController));
         } else {
             database.createTables();
             callDatabase(allMovies);
             observableMovies.addAll(allMovies);         // add dummy data to observable list
             movieListView.setItems(observableMovies);   // set data of observable list to list view
-            movieListView.setCellFactory(movieListView -> new MovieCell(new WatchlistController(new WatchlistRepository(new Database()))));        }
+            movieListView.setCellFactory(movieListView -> new MovieCell(new WatchlistController(new WatchlistRepository(new Database()))));
+        }
 
         // Add genre items to the genreComboBox
         genreComboBox.setPromptText("Filter by Genre");

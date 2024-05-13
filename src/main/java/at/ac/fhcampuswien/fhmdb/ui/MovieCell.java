@@ -34,11 +34,11 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
 //    private final Image plusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/plus-icon.png");
 //    private final Image minusIcon = new Image("/at/ac/fhcampuswien/fhmdb/icons/minus-icon.png");
 
-    public MovieCell( WatchlistController watchlistController) {
+    public MovieCell(WatchlistController watchlistController) {
         this.watchlistController = watchlistController;
         movieImage.setFitWidth(100);
         movieImage.setPreserveRatio(true);
-        layout.getChildren().addAll(movieImage, textLayout, watchButton); // Add watchButton to layout
+        layout.getChildren().addAll(movieImage, textLayout); // Add watchButton to layout
         textLayout.setFillWidth(true);
 
 
@@ -138,7 +138,7 @@ public class MovieCell extends ListCell<Movie> implements ClickEventHandler {
         Label descriptionLabel = createStyledLabel(movie.getDescription(), 12, "-fx-text-fill: white;");
         descriptionLabel.setWrapText(true);
 
-        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel); //, watchButton
+        textLayout.getChildren().addAll(titleLabel, directorLabel, mainCastLabel, releaseYearLabel, ratingLabel, lengthLabel, genresLabel, descriptionLabel, watchButton); //, watchButton
     }
 
     private Label createStyledLabel(String text, double fontSize, String style) {
